@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 
 /// Thrown when specific device to open connection to is not found
 class DeviceNotFoundException extends PlatformException {
-  DeviceNotFoundException(String code, String message, String details)
+  DeviceNotFoundException(String code, String? message, String? details)
       : super(
           code: code,
           message: message,
@@ -16,7 +16,7 @@ class DeviceNotFoundException extends PlatformException {
 
 /// Thrown when device has no interfaces, or when ```getInterface``` method did not return interface
 class InterfaceNotFoundException extends PlatformException {
-  InterfaceNotFoundException(String code, String message, String details)
+  InterfaceNotFoundException(String code, String? message, String? details)
       : super(
           code: code,
           message: message,
@@ -26,7 +26,7 @@ class InterfaceNotFoundException extends PlatformException {
 
 /// Thrown when ```getEndpointCount``` returns 0, or when ```getEndpoint``` method did not return endpoint
 class EndpointNotFoundException extends PlatformException {
-  EndpointNotFoundException(String code, String message, String details)
+  EndpointNotFoundException(String code, String? message, String? details)
       : super(
           code: code,
           message: message,
@@ -35,7 +35,7 @@ class EndpointNotFoundException extends PlatformException {
 }
 
 class ListDevicesException extends PlatformException {
-  ListDevicesException(String code, String message, String details)
+  ListDevicesException(String code, String? message, String? details)
       : super(
           code: code,
           message: message,
@@ -45,7 +45,7 @@ class ListDevicesException extends PlatformException {
 
 /// Thrown when failed to obtain permission to connect to device.
 class PermissionException extends PlatformException {
-  PermissionException(String code, String message, String details)
+  PermissionException(String code, String? message, String? details)
       : super(
           code: code,
           message: message,
@@ -66,10 +66,10 @@ class UsbEvent {
       "android.hardware.usb.action.USB_DEVICE_DETACHED";
 
   /// either ACTION_USB_ATTACHED or ACTION_USB_DETACHED
-  String event;
+  String? event;
 
   /// The device for which the event was fired.
-  UsbDevice device;
+  UsbDevice? device;
 
   @override
   String toString() {
@@ -78,7 +78,7 @@ class UsbEvent {
 
   Map<String, dynamic> toJson() => {
         'event': event,
-        'device': device.toJson(),
+        'device': device!.toJson(),
       };
 }
 
@@ -90,19 +90,19 @@ Copyright by Ron Bessems (https://github.com/altera2015/usbserial)
 /// This is used to determine which Usb Device to open.
 class UsbDevice {
   /// Vendor Id
-  final int vid;
+  final int? vid;
 
   /// Product Id
-  final int pid;
-  final String productName;
-  final String manufacturerName;
+  final int? pid;
+  final String? productName;
+  final String? manufacturerName;
 
   /// The device id is unique to this Usb Device until it is unplugged.
   /// when replugged this ID will be different.
-  final int deviceId;
+  final int? deviceId;
 
   /// The Serial number from the USB device.
-  final String serial;
+  final String? serial;
 
   UsbDevice(this.vid, this.pid, this.productName, this.manufacturerName,
       this.deviceId, this.serial);
@@ -123,7 +123,7 @@ class UsbDevice {
 
   @override
   String toString() {
-    return "UsbDevice: ${vid.toRadixString(16)}-${pid.toRadixString(16)} $productName, $manufacturerName $serial";
+    return "UsbDevice: ${vid!.toRadixString(16)}-${pid!.toRadixString(16)} $productName, $manufacturerName $serial";
   }
 }
 
@@ -137,7 +137,7 @@ class FlutterUsbWrite {
           const EventChannel('flutter_usb_write/events');
       _instance = FlutterUsbWrite.private(methodChannel, eventChannel);
     }
-    return _instance;
+    return _instance!;
   }
 
   /// This constructor is only used for testing and shouldn't be accessed by
@@ -145,16 +145,16 @@ class FlutterUsbWrite {
   @visibleForTesting
   FlutterUsbWrite.private(this._methodChannel, this._eventChannel);
 
-  static FlutterUsbWrite _instance;
+  static FlutterUsbWrite? _instance;
 
-  final MethodChannel _methodChannel;
-  final EventChannel _eventChannel;
-  Stream<UsbEvent> _eventStream;
+  final MethodChannel? _methodChannel;
+  final EventChannel? _eventChannel;
+  Stream<UsbEvent>? _eventStream;
 
-  Stream<UsbEvent> get usbEventStream {
+  Stream<UsbEvent>? get usbEventStream {
     if (_eventStream == null) {
       _eventStream =
-          _eventChannel.receiveBroadcastStream().map<UsbEvent>((value) {
+          _eventChannel!.receiveBroadcastStream().map<UsbEvent>((value) {
         UsbEvent msg = UsbEvent();
         msg.device = UsbDevice.fromJSON(value);
         msg.event = value["event"];
@@ -166,15 +166,15 @@ class FlutterUsbWrite {
 
   /// Returns a list of UsbDevices currently plugged in.
   Future<List<UsbDevice>> listDevices() async {
-    List<dynamic> devices = await _methodChannel.invokeMethod("listDevices");
+    List<dynamic> devices = await (_methodChannel!.invokeMethod("listDevices") as FutureOr<List<dynamic>>);
     return devices.map(UsbDevice.fromJSON).toList();
   }
 
   /// Opens connection to device with specified deviceId, or with specified VendorId and ProductId
   Future<UsbDevice> open({
-    int deviceId,
-    int vendorId,
-    int productId,
+    int? deviceId,
+    int? vendorId,
+    int? productId,
   }) async {
     Map<String, dynamic> args = {
       "vid": vendorId,
@@ -182,7 +182,7 @@ class FlutterUsbWrite {
       "deviceId": deviceId
     };
     try {
-      dynamic result = await _methodChannel.invokeMethod("open", args);
+      dynamic result = await _methodChannel!.invokeMethod("open", args);
       return UsbDevice.fromJSON(result);
     } on PlatformException catch (e) {
       throw _getTypedException(e);
@@ -191,10 +191,10 @@ class FlutterUsbWrite {
 
   /// Sends raw bytes to USB device.
   /// Requires open connection to USB device.
-  Future<bool> write(Uint8List bytes) async {
+  Future<bool?> write(Uint8List bytes) async {
     Map<String, dynamic> args = {"bytes": bytes};
     try {
-      return await _methodChannel.invokeMethod("write", args);
+      return await _methodChannel!.invokeMethod("write", args);
     } on PlatformException catch (e) {
       throw _getTypedException(e);
     }
@@ -203,7 +203,7 @@ class FlutterUsbWrite {
   /// Close USB connection
   Future close() async {
     try {
-      return await _methodChannel.invokeMethod("close");
+      return await _methodChannel!.invokeMethod("close");
     } on PlatformException catch (e) {
       throw _getTypedException(e);
     }
@@ -211,8 +211,8 @@ class FlutterUsbWrite {
 
   /// Optionally set transfer control.
   /// Since this plugin supports only sending data to device, only Device-To-Host ```[requestType]``` makes sense.
-  Future<int> controlTransfer(int requestType, int request, int value,
-      int index, Uint8List buffer, int length, int timeout) async {
+  Future<int?> controlTransfer(int requestType, int request, int value,
+      int index, Uint8List? buffer, int length, int timeout) async {
     Map<String, dynamic> args = {
       "requestType": requestType,
       "request": request,
@@ -223,7 +223,7 @@ class FlutterUsbWrite {
       "timeout": timeout = 0,
     };
     try {
-      return await _methodChannel.invokeMethod("controlTransfer", args);
+      return await _methodChannel!.invokeMethod("controlTransfer", args);
     } on PlatformException catch (e) {
       throw _getTypedException(e);
     }
