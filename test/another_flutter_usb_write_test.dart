@@ -4,7 +4,7 @@ import 'package:async/async.dart';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_usb_write/flutter_usb_write.dart';
+import 'package:another_flutter_usb_write/flutter_usb_write.dart';
 import 'package:mockito/mockito.dart';
 import 'dart:convert';
 
@@ -21,8 +21,7 @@ void main() {
   UsbDevice? device;
 
   setUp(() {
-    device = UsbDevice(1046, 20497, "USB Portable Printer    ",
-        "STMicroelectronics", 1002, "Printer");
+    device = UsbDevice(1046, 20497, "USB Portable Printer    ", "STMicroelectronics", 1002, "Printer");
     methodChannel = MockMethodChannel();
     eventChannel = MockEventChannel();
     flutterUsbWrite = FlutterUsbWrite.private(methodChannel, eventChannel);
@@ -30,13 +29,8 @@ void main() {
 
   group('Open device', () {
     test('open by deviceId', () async {
-      Map<String, dynamic> args = {
-        "vid": null,
-        "pid": null,
-        "deviceId": device!.deviceId
-      };
-      when(methodChannel!.invokeMethod('open', args))
-          .thenAnswer((Invocation invoke) {
+      Map<String, dynamic> args = {"vid": null, "pid": null, "deviceId": device!.deviceId};
+      when(methodChannel!.invokeMethod('open', args)).thenAnswer((Invocation invoke) {
         return Future<Map<String, dynamic>>.value(device!.toJson());
       });
       var result = await flutterUsbWrite!.open(deviceId: device!.deviceId);
@@ -49,12 +43,10 @@ void main() {
         "pid": device!.pid,
         "deviceId": null,
       };
-      when(methodChannel!.invokeMethod('open', args))
-          .thenAnswer((Invocation invoke) {
+      when(methodChannel!.invokeMethod('open', args)).thenAnswer((Invocation invoke) {
         return Future<Map<String, dynamic>>.value(device!.toJson());
       });
-      var result = await flutterUsbWrite!.open(
-          vendorId: device!.vid, productId: device!.pid);
+      var result = await flutterUsbWrite!.open(vendorId: device!.vid, productId: device!.pid);
       expect(result.toJson(), device!.toJson());
     });
   });
@@ -73,8 +65,7 @@ void main() {
     test('write', () async {
       var bytes = ascii.encode("Hello world");
       Map<String, dynamic> args = {"bytes": bytes};
-      when(methodChannel!.invokeMethod('write', args))
-          .thenAnswer((Invocation invoke) {
+      when(methodChannel!.invokeMethod('write', args)).thenAnswer((Invocation invoke) {
         return Future<bool>.value(true);
       });
       var result = await flutterUsbWrite!.write(bytes);
@@ -93,12 +84,10 @@ void main() {
         "length": 0,
         "timeout": 0,
       };
-      when(methodChannel!.invokeMethod<int>('controlTransfer', args))
-          .thenAnswer((Invocation invoke) {
+      when(methodChannel!.invokeMethod<int>('controlTransfer', args)).thenAnswer((Invocation invoke) {
         return Future<int>.value(0);
       });
-      var result =
-          await flutterUsbWrite!.controlTransfer(161, 1, 0, 0, null, 0, 0);
+      var result = await flutterUsbWrite!.controlTransfer(161, 1, 0, 0, null, 0, 0);
       expect(result, 0);
     });
   });
@@ -108,8 +97,7 @@ void main() {
 
     setUp(() {
       controller = StreamController<Map<String, dynamic>>();
-      when(eventChannel!.receiveBroadcastStream())
-          .thenAnswer((Invocation invoke) => controller.stream);
+      when(eventChannel!.receiveBroadcastStream()).thenAnswer((Invocation invoke) => controller.stream);
     });
 
     tearDown(() {
@@ -124,8 +112,7 @@ void main() {
     });
 
     test('receive values', () async {
-      final StreamQueue<UsbEvent> queue =
-          StreamQueue<UsbEvent>(flutterUsbWrite!.usbEventStream!);
+      final StreamQueue<UsbEvent> queue = StreamQueue<UsbEvent>(flutterUsbWrite!.usbEventStream!);
 
       Map<String, dynamic> msg1 = device!.toJson();
       msg1["event"] = UsbEvent.ACTION_USB_ATTACHED;
