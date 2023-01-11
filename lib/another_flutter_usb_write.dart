@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -166,7 +165,8 @@ class FlutterUsbWrite {
 
   /// Returns a list of UsbDevices currently plugged in.
   Future<List<UsbDevice>> listDevices() async {
-    List<dynamic> devices = await (_methodChannel!.invokeMethod("listDevices") as FutureOr<List<dynamic>>);
+    List<dynamic> devices = await (_methodChannel!.invokeMethod("listDevices")
+        as FutureOr<List<dynamic>>);
     return devices.map(UsbDevice.fromJSON).toList();
   }
 
@@ -233,19 +233,14 @@ class FlutterUsbWrite {
     switch (e.code) {
       case "DEVICE_NOT_FOUND_ERROR":
         return DeviceNotFoundException(e.code, e.message, e.details);
-        break;
       case "INTERFACE_NOT_FOUND_ERROR":
         return InterfaceNotFoundException(e.code, e.message, e.details);
-        break;
       case "ENDPOINT_NOT_FOUND_ERROR":
         return EndpointNotFoundException(e.code, e.message, e.details);
-        break;
       case "LIST_DEVICES_ERROR":
         return ListDevicesException(e.code, e.message, e.details);
-        break;
       case "PERMISSION_ERROR":
         return PermissionException(e.code, e.message, e.details);
-        break;
       default:
         return e;
     }

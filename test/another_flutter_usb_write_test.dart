@@ -4,7 +4,7 @@ import 'package:async/async.dart';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:another_flutter_usb_write/flutter_usb_write.dart';
+import 'package:another_flutter_usb_write/another_flutter_usb_write.dart';
 import 'package:mockito/mockito.dart';
 import 'dart:convert';
 
