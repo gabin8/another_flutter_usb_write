@@ -1,7 +1,3 @@
-## 0.1.0
+## 1.0.0
 
-* Published as plugin
-
-## 0.0.1
-
-* First working version
+- Published nullsafety version of flutter_usb_write
