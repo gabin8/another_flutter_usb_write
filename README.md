@@ -28,7 +28,7 @@ Plugin has been tested with multiple USB POS printers.
 
 ## Limitations
 
-- doesn't suppport receiving messages over USB connection (IE. out of paper message)
+- doesn't support receiving messages over USB connection (IE. out of paper message)
 - connection is fixed to first interface on selected USB device.
 - only supports [USB_ENDPOINT_XFER_BULK](https://developer.android.com/reference/android/hardware/usb/UsbConstants.html#USB_ENDPOINT_XFER_BULK) endpoints
 - only supports USB endpoints where direction is NOT [USB_DIR_IN]( https://developer.android.com/reference/android/hardware/usb/UsbConstants.html#USB_DIR_IN)
