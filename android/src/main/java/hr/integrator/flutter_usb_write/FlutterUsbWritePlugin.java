@@ -351,15 +351,13 @@ public class FlutterUsbWritePlugin implements FlutterPlugin, MethodCallHandler, 
       }
     }
     BRC2 usbReceiver = new BRC2(device, cb);
-//    PendingIntent permissionIntent = PendingIntent.getBroadcast(applicationContext, 0,
-//        new Intent(ACTION_USB_PERMISSION), 0);
+    Intent intent = new Intent(ACTION_USB_PERMISSION);
     PendingIntent permissionIntent;
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-      permissionIntent = PendingIntent.getBroadcast
-              (applicationContext, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_MUTABLE);
+    if (android.os.Build.VERSION.SDK_INT >= 34) {
+      permissionIntent = PendingIntent.getBroadcast(applicationContext, 0, intent, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_ALLOW_UNSAFE_IMPLICIT_INTENT);
     } else {
       permissionIntent = PendingIntent.getBroadcast
-              (applicationContext, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_ONE_SHOT);
+              (applicationContext, 0, intent, PendingIntent.FLAG_MUTABLE);
     }
     IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
     applicationContext.registerReceiver(usbReceiver, filter);
