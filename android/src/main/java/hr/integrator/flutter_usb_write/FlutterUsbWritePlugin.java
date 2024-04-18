@@ -354,8 +354,10 @@ public class FlutterUsbWritePlugin implements FlutterPlugin, MethodCallHandler, 
     Intent intent = new Intent(ACTION_USB_PERMISSION);
     PendingIntent permissionIntent;
     if (android.os.Build.VERSION.SDK_INT >= 34) {
+      Log.d(TAG, "Create intent PendingIntent.FLAG_ALLOW_UNSAFE_IMPLICIT_INTENT")
       permissionIntent = PendingIntent.getBroadcast(applicationContext, 0, intent, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_ALLOW_UNSAFE_IMPLICIT_INTENT);
     } else {
+      Log.d(TAG, "Create intent PendingIntent.FLAG_MUTABLE")
       permissionIntent = PendingIntent.getBroadcast
               (applicationContext, 0, intent, PendingIntent.FLAG_MUTABLE);
     }
