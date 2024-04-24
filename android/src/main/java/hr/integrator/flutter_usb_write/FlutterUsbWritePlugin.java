@@ -204,7 +204,7 @@ public class FlutterUsbWritePlugin implements FlutterPlugin, MethodCallHandler, 
       }
       openDeviceCb.onSuccess(device);
     } catch (java.lang.SecurityException e) {
-
+      Log.d(TAG, "got SecurityException, allowAcquirePermission: "+allowAcquirePermission);
       if (allowAcquirePermission) {
         acquirePermissions(device, cb);
         return;
@@ -333,6 +333,7 @@ public class FlutterUsbWritePlugin implements FlutterPlugin, MethodCallHandler, 
       @Override
       public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
+        Log.d(TAG, "BRC2 onReceive action : "+action);
         if (ACTION_USB_PERMISSION.equals(action)) {
           Log.e(TAG, "BroadcastReceiver intent arrived, entering sync...");
           applicationContext.unregisterReceiver(this);
@@ -350,14 +351,15 @@ public class FlutterUsbWritePlugin implements FlutterPlugin, MethodCallHandler, 
         }
       }
     }
+    Log.d(TAG, "acquirePermissions for device: "+device);
     BRC2 usbReceiver = new BRC2(device, cb);
     Intent intent = new Intent(ACTION_USB_PERMISSION);
     PendingIntent permissionIntent;
     if (android.os.Build.VERSION.SDK_INT >= 34) {
-      Log.d(TAG, "Create intent PendingIntent.FLAG_ALLOW_UNSAFE_IMPLICIT_INTENT")
+      Log.d(TAG, "Create intent PendingIntent.FLAG_ALLOW_UNSAFE_IMPLICIT_INTENT");
       permissionIntent = PendingIntent.getBroadcast(applicationContext, 0, intent, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_ALLOW_UNSAFE_IMPLICIT_INTENT);
     } else {
-      Log.d(TAG, "Create intent PendingIntent.FLAG_MUTABLE")
+      Log.d(TAG, "Create intent PendingIntent.FLAG_MUTABLE");
       permissionIntent = PendingIntent.getBroadcast
               (applicationContext, 0, intent, PendingIntent.FLAG_MUTABLE);
     }
