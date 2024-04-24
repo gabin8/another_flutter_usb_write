@@ -364,7 +364,7 @@ public class FlutterUsbWritePlugin implements FlutterPlugin, MethodCallHandler, 
               (applicationContext, 0, intent, PendingIntent.FLAG_MUTABLE);
     }
     IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-    applicationContext.registerReceiver(usbReceiver, filter);
+    applicationContext.registerReceiver(usbReceiver, filter, Context.RECEIVER_EXPORTED);
     m_Manager.requestPermission(device, permissionIntent);
   }
 
