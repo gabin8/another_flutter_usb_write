@@ -23,6 +23,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 34
+    namespace "me.tibox.scanner.usbwrite"
 
     defaultConfig {
         minSdkVersion 21
